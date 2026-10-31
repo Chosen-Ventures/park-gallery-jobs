@@ -40,6 +40,21 @@ form{border-top:1px solid var(--line);padding-top:32px}.field{margin:0 0 31px}la
 <script>
 (function () {
   const form = document.getElementById('candidate-form');
+  // Prefill candidate identity from a personalised invitation URL.
+  // The fields remain editable so recipients can correct any mistakes.
+  const invitation = new URLSearchParams(window.location.search);
+  const prefills = {name: invitation.get('name'), email: invitation.get('email')};
+  for (const [id, value] of Object.entries(prefills)) {
+    if (value !== null) document.getElementById(id).value = value;
+  }
+  if (invitation.has('name') || invitation.has('email')) {
+    invitation.delete('name');
+    invitation.delete('email');
+    const remaining = invitation.toString();
+    const cleaned = window.location.pathname + (remaining ? '?' + remaining : '') + window.location.hash;
+    window.history.replaceState(null, '', cleaned);
+  }
+
   const fields = [...document.querySelectorAll('textarea[data-min-words]')];
   const status = document.getElementById('submit-status');
   const button = document.getElementById('submit-button');
