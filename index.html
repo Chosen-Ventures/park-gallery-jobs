@@ -24,14 +24,43 @@ form{border-top:1px solid var(--line);padding-top:32px}.field{margin:0 0 31px}la
 <form id="candidate-form" action="#" method="post" novalidate>
 <div class="field"><label for="name">Full name</label><input id="name" name="name" type="text" autocomplete="name" required disabled></div>
 <div class="field"><label for="email">Email address used for your application</label><input id="email" name="email" type="email" autocomplete="email" required disabled></div>
-<div class="field question"><label for="q1">What attracts you to this particular part-time role at Park Gallery, and how does it fit with your longer-term work plans? We are looking for someone who would enjoy the role and grow with the gallery over time. Please explain how the hours, responsibilities and opportunities described match what you are looking for, and what would keep the role interesting and rewarding for you.</label><textarea id="q1" name="question_1" required disabled></textarea></div>
-<div class="field question"><label for="q2">What experience, if any, do you have of creating content or using social media to promote a business, organisation or project? What role do you think social media plays in a business like Park Gallery? Please briefly explain your answer.</label><textarea id="q2" name="question_2" required disabled></textarea></div>
-<div class="field question"><label for="q3">For much of your working week, you would be independently responsible for the gallery, welcoming visitors, selling artwork, managing enquiries and handling day-to-day tasks. The pace includes quiet periods with occasional busier periods. How well does this way of working suit you? Please briefly explain your answer.</label><textarea id="q3" name="question_3" required disabled></textarea></div>
+<div class="field question"><label for="q1">What attracts you to this particular part-time role at Park Gallery, and how does it fit with your longer-term work plans? We are looking for someone who would enjoy the role and grow with the gallery over time. Please explain how the hours, responsibilities and opportunities described match what you are looking for, and what would keep the role interesting and rewarding for you.</label><textarea id="q1" name="question_1" aria-describedby="q1-count" data-min-words="100" data-max-words="300" required disabled></textarea><p class="hint" id="q1-count" aria-live="polite">0 words · 100–300 required</p></div>
+<div class="field question"><label for="q2">What experience, if any, do you have of creating content or using social media to promote a business, organisation or project? What role do you think social media plays in a business like Park Gallery? Please briefly explain your answer.</label><textarea id="q2" name="question_2" aria-describedby="q2-count" data-min-words="100" data-max-words="300" required disabled></textarea><p class="hint" id="q2-count" aria-live="polite">0 words · 100–300 required</p></div>
+<div class="field question"><label for="q3">For much of your working week, you would be independently responsible for the gallery, welcoming visitors, selling artwork, managing enquiries and handling day-to-day tasks. The pace includes quiet periods with occasional busier periods. How well does this way of working suit you? Please briefly explain your answer.</label><textarea id="q3" name="question_3" aria-describedby="q3-count" data-min-words="100" data-max-words="300" required disabled></textarea><p class="hint" id="q3-count" aria-live="polite">0 words · 100–300 required</p></div>
 <div class="field question"><label for="q4">Do you have the right to work in the UK?</label><select id="q4" name="question_4" required disabled><option value="">Please select</option><option value="Yes">Yes</option><option value="No">No</option></select></div>
 <button type="submit" disabled>Submit answers</button>
 <p class="notice">Your answers will be used only to assess your application for this vacancy. A fuller privacy notice and the submission service will be confirmed before the questionnaire opens.</p>
 </form>
 </main>
 <footer>© Park Gallery · Montpellier, Cheltenham · <a href="https://parkgallery.co.uk">parkgallery.co.uk</a></footer>
+<script>
+(function(){
+  const fields = document.querySelectorAll('textarea[data-min-words]');
+  function countWords(value) {
+    const cleaned = value.trim();
+    return cleaned ? cleaned.split(/\s+/u).length : 0;
+  }
+  fields.forEach(field => {
+    const counter = document.getElementById(field.id + '-count');
+    function update() {
+      const count = countWords(field.value);
+      const min = Number(field.dataset.minWords);
+      const max = Number(field.dataset.maxWords);
+      counter.textContent = count + ' words · ' + min + '–' + max + ' required';
+      const valid = count >= min && count <= max;
+      field.setCustomValidity(valid ? '' : 'Please write between ' + min + ' and ' + max + ' words.');
+    }
+    field.addEventListener('input', update);
+    update();
+  });
+  document.getElementById('candidate-form').addEventListener('submit', function(event) {
+    fields.forEach(field => field.dispatchEvent(new Event('input')));
+    if (!this.checkValidity()) {
+      event.preventDefault();
+      this.reportValidity();
+    }
+  });
+})();
+</script>
 </body>
 </html>
